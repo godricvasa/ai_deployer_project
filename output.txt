@@ -1,0 +1,63 @@
+PS C:\Users\vasanth\Desktop\ai_deployer_project> python .\main3.py
+
+🚀 Final Output from Code Execution:
+ |-- app
+    |-- main.py
+    |-- __init__.py
+|-- README.md
+|-- requirements.txt
+|-- tmp_code_4f771f066248c524165d32351f2c4f4f172fe33edf1e9806452baec08db52321.py
+
+
+🚀 Final Output from Build File Detection:
+ requirements.txt
+
+🚀 Final Output from Build File Reader:
+ Here is the Python code that reads and prints all data present in the 'requirements.txt' file located at the specified path:
+
+```python
+file_path = r'C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi\requirements.txt'
+
+try:
+    with open(file_path, 'r') as file:
+        data = file.read()
+    print(data)
+except FileNotFoundError:
+    print(f'Error: The file at {file_path} was not found.')
+except Exception as e:
+    print(f'An error occurred: {e}')
+```
+
+This code attempts to open and read the 'requirements.txt' file, then prints its contents. If the file is not found or another error occurs, an appropriate message will be printed.
+
+🚀 Final Output from Framework Extractor:
+ fastapi
+uvicorn
+
+
+
+🚀 Final Output from Dockerfile Generator:
+```dockerfile
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the requirements file
+COPY requirements.txt .
+
+# Install the dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY ./app ./app
+
+# Expose the port that Uvicorn will run on
+EXPOSE 8000
+
+# Define the command to run the application using Uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+```
+
+🚀 Final Dockerfile has been saved to: C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi\Dockerfile
