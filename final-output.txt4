@@ -1,0 +1,140 @@
+
+C:\Users\vasanth\Desktop\ai_deployer_project>python main3.py
+
+🚀 Final Output from Code Execution:
+ |-- app
+    |-- main.py
+    |-- __init__.py
+|-- Dockerfile
+|-- README.md
+|-- requirements.txt
+|-- tmp_code_122dae5c4482b96a350b312d9e2fd145079c71da4244160889a4b7848d95c7ab.py
+
+
+🚀 Final Output from Build File Detection:
+ requirements.txt
+
+🚀 Final Output from Build File Reader:
+ Here's the Python code you can use to read and print all data from the `requirements.txt` file located at `C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi`:
+
+```python
+# Define the path to the requirements.txt file
+file_path = r'C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi\requirements.txt'
+
+# Function to read and print the contents of the file
+def read_requirements(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            contents = file.read()
+            print(contents)
+    except Exception as e:
+        print(f'An error occurred: {e}')
+
+# Call the function to read the requirements
+read_requirements(file_path)
+```
+
+You can run this code in a Python environment, and it will display the contents of the `requirements.txt` file.
+
+🚀 Final Output from Framework Extractor:
+ 
+
+🚀 Final Output from Dockerfile Generator:
+```dockerfile
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install required packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application code into the container
+COPY app/ ./app
+
+# Expose the necessary port (default for Uvicorn)
+EXPOSE 8000
+
+# Define the command to run the application
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+```
+
+🚀 Final Dockerfile has been saved to: C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi\Dockerfile
+
+🚀 Final Output from Docker Runner:
+ ```python
+import subprocess
+import sys
+
+def build_and_run_docker_container(dockerfile_path):
+    try:
+        # Build the Docker image
+        build_command = f'docker build -t fastapi_image "{dockerfile_path}"'
+        subprocess.run(build_command, shell=True, check=True)
+
+        # Run the Docker container
+        run_command = 'docker run -d -p 3000:8000 fastapi_image'
+        subprocess.run(run_command, shell=True, check=True)
+
+        print('Success')
+
+    except subprocess.CalledProcessError as e:
+        print(f'Failed with error: {e}')
+
+if __name__ == "__main__":
+    dockerfile_directory = r"C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi"
+    build_and_run_docker_container(dockerfile_directory)
+```
+
+🚀 Final Docker Runner Script has been saved to: C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi\run_docker.py
+
+🚀 Final Output from Docker Executor:
+ #0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 581B 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.11-slim
+#2 ...
+
+#3 [auth] library/python:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.11-slim
+#2 DONE 3.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [1/5] FROM docker.io/library/python:3.11-slim@sha256:7029b00486ac40bed03e36775b864d3f3d39dcbdf19cd45e6a52d541e6c178f0
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 122B done
+#6 DONE 0.0s
+
+#7 [3/5] COPY requirements.txt .
+#7 CACHED
+
+#8 [4/5] RUN pip install --no-cache-dir -r requirements.txt
+#8 CACHED
+
+#9 [2/5] WORKDIR /app
+#9 CACHED
+
+#10 [5/5] COPY app/ ./app
+#10 CACHED
+
+#11 exporting to image
+#11 exporting layers done
+#11 writing image sha256:7a6627b712832dc488bd79b01b365d97ffeba3320f062629e824b46e19fed515 done
+#11 naming to docker.io/library/fastapi_image done
+#11 DONE 0.0s
+76d499f319a4a79feb6648279b5c59d25a092a498dd22429f9e50fef6863c3ab
+Success

@@ -12,7 +12,7 @@ from autogen_ext.code_executors.local import LocalCommandLineCodeExecutor
 from autogen_ext.tools.code_execution import PythonCodeExecutionTool
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.agents import AssistantAgent
-target_path = r"C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\flask"
+target_path = r"C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\fastapi"
 
 # Step 1: Initialize Local Executor
 executor = LocalCommandLineCodeExecutor(work_dir=target_path)
@@ -68,6 +68,28 @@ dockerfile_generator_agent = AssistantAgent(
     You are a Dockerfile generator. Based on the detected tech stack (FastAPI, Uvicorn,etc...) and the project structure, generate an optimized Dockerfile.
     """
 )
+# Agent 8: Docker Runner
+docker_runner_agent = AssistantAgent(
+    name="docker_runner",
+    model_client=model_client,
+    system_message="""
+    You are a Python script generator. Generate a Python script that builds and runs a Docker container 
+    using the Dockerfile in the provided directory. Ensure that it handles errors and prints 'Success' if 
+    the container starts correctly, or 'Failed with error: <error_message>' if an error occurs.
+    """
+)
+
+# Agent 9: Docker Executor
+docker_executor_agent = AssistantAgent(
+    name="docker_executor",
+    model_client=model_client,
+    tools=[python_tool],  # This allows it to execute Python scripts
+    system_message="""
+    You are a Python code executor. Run the given Python script to build and run a Docker container.
+    If the container runs successfully, return 'Success'. If it fails, return 'Failed with error: <error_message>'.
+    """
+)
+
 
 # Path to target directory
 # target_path = r"C:\Users\vasanth\Desktop\ai_deployer_project\test-repos\flask"
@@ -115,7 +137,7 @@ async def run_agents():
     dockerfile_path = os.path.join(target_path, "Dockerfile")
     with open(dockerfile_path, "w") as file:
         docker_file = dockerfile_response.messages[-1].content
-        if docker_file.startswith("```dockerfile"):
+        if docker_file.startswith("```dockerfile") or docker_file.startswith("```Dockerfile"):
           docker_file = docker_file[len("```dockerfile"):].lstrip()
     
     # Remove ``` from the end
@@ -125,6 +147,30 @@ async def run_agents():
         file.write(docker_file)
 
     print("\n🚀 Final Dockerfile has been saved to:", dockerfile_path)
+
+    docker_runner_response = await docker_runner_agent.run(
+        task=f"Generate a Python script to build and run a Docker container using the Dockerfile in {target_path}.Dont give any explanations "
+        "when running the container, try to  use port 3000 in lhs and 8000 at rhs for mapping at host side to vm side, because i am using wsl2 for docker"
+             f"The script should print 'Success' if the container starts successfully, or 'Failed with error: <error_message>' if there is an error."
+    )
+    docker_runner_script = docker_runner_response.messages[-1].content
+    print("\n🚀 Final Output from Docker Runner:\n", docker_runner_script)
+
+    # Save the script
+    docker_script_path = os.path.join(target_path, "run_docker.py")
+    with open(docker_script_path, "w") as file:
+        script_content = docker_runner_script
+        if script_content.startswith("```python"):
+            script_content = script_content[len("```python"):].lstrip()
+        if script_content.endswith("```"):
+            script_content = script_content[:-3].rstrip()
+        file.write(script_content)
+
+    print("\n🚀 Final Docker Runner Script has been saved to:", docker_script_path)
+
+    # Step 7: Execute Docker Runner Script
+    docker_exec_response = await docker_executor_agent.run(task=script_content)
+    print("\n🚀 Final Output from Docker Executor:\n", docker_exec_response.messages[-1].content)
 
 
 if __name__ == "__main__":
